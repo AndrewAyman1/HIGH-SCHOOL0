@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>طريقي - العد التنازلي للثانوية العامة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --bg-color: #f5f7fa;
+            --text-color: #2c3e50;
+            --card-bg: white;
+            --border-color: #ddd;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --radius: 15px;
+        }
+
+        .dark-mode {
+            --primary-color: #2980b9;
+            --secondary-color: #27ae60;
+            --accent-color: #c0392b;
+            --light-color: #34495e;
+            --dark-color: #ecf0f1;
+            --bg-color: #1a1a2e;
+            --text-color: #ecf0f1;
+            --card-bg: #16213e;
+            --border-color: #34495e;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 25px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .theme-toggle,
+        .export-btn,
+        .import-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .theme-toggle:hover,
+        .export-btn:hover,
+        .import-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .countdown {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .countdown-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-item {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 80px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .countdown-item div:first-child {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 6px;
+            margin-bottom: 30px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .day-box {
+            aspect-ratio: 1;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .day-box:hover {
+            transform: scale(1.08);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .day-box.completed {
+            background: linear-gradient(135deg, var(--secondary-color), #27ae60);
+            color: white;
+        }
+
+        .day-box.current {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .day-box.future {
+            background-color: var(--light-color);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .day-box.past {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .day-box.has-image::after {
+            content: "🖼️";
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            font-size: 10px;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 0;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-top-left-radius: var(--radius);
+            border-top-right-radius: var(--radius);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            font-size: 24px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.2);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        textarea,
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            resize: vertical;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            font-size: 15px;
+        }
+
+        textarea:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .final-goal {
+            text-align: center;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            margin-top: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .college-image {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            max-height: 300px;
+            object-fit: cover;
+        }
+
+        .motivational-quote {
+            font-style: italic;
+            color: var(--primary-color);
+            margin: 20px 0;
+            text-align: center;
+            font-size: 18px;
+            padding: 15px;
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 10px;
+            border-right: 4px solid var(--primary-color);
+        }
+
+        .task-container {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .section-title i {
+            font-size: 20px;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .task-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .task-text {
+            flex-grow: 1;
+            font-size: 15px;
+            margin: 0 15px;
+        }
+
+        .task-completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .add-task-form {
+            display: flex;
+            margin-bottom: 18px;
+            gap: 0;
+        }
+
+        .add-task-input {
+            flex-grow: 1;
+            margin-bottom: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
+
+        .add-task-btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            background: linear-gradient(135deg, var(--secondary-color), #27ae60);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            height: 46px;
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+
+        .add-task-btn:hover {
+            background: linear-gradient(135deg, #27ae60, #219653);
+        }
+
+        /* تصميم الـ Checkbox الجديد */
+        .checkbox-wrapper-31 {
+            position: relative;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+        }
+
+        .checkbox-wrapper-31:hover .check {
+            stroke-dashoffset: 0;
+        }
+
+        .checkbox-wrapper-31 .background {
+            fill: #ccc;
+            transition: ease all 0.6s;
+            -webkit-transition: ease all 0.6s;
+        }
+
+        .checkbox-wrapper-31 .stroke {
+            fill: none;
+            stroke: #fff;
+            stroke-miterlimit: 10;
+            stroke-width: 2px;
+            stroke-dashoffset: 100;
+            stroke-dasharray: 100;
+            transition: ease all 0.6s;
+            -webkit-transition: ease all 0.6s;
+        }
+
+        .checkbox-wrapper-31 .check {
+            fill: none;
+            stroke: #fff;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 2px;
+            stroke-dashoffset: 22;
+            stroke-dasharray: 22;
+            transition: ease all 0.6s;
+            -webkit-transition: ease all 0.6s;
+        }
+
+        .checkbox-wrapper-31 input[type=checkbox] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            margin: 0;
+            opacity: 0;
+            -appearance: none;
+            cursor: pointer;
+            z-index: 1;
+        }
+
+        .checkbox-wrapper-31 input[type=checkbox]:checked+svg .background {
+            fill: #6cbe45;
+        }
+
+        .checkbox-wrapper-31 input[type=checkbox]:checked+svg .stroke {
+            stroke-dashoffset: 0;
+        }
+
+        .checkbox-wrapper-31 input[type=checkbox]:checked+svg .check {
+            stroke-dashoffset: 0;
+        }
+
+        /* أزرار الحذف */
+        .delete-button {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: rgb(20, 20, 20);
+            border: none;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+            cursor: pointer;
+            transition-duration: 0.3s;
+            overflow: hidden;
+            position: relative;
+            gap: 2px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .task-item:hover .delete-button,
+        .lecture-item:hover .delete-button {
+            opacity: 1;
+        }
+
+        .svgIcon {
+            width: 10px;
+            transition-duration: 0.3s;
+        }
+
+        .svgIcon path {
+            fill: white;
+        }
+
+        .delete-button:hover {
+            transition-duration: 0.3s;
+            align-items: center;
+            gap: 0;
+        }
+
+        .bin-top {
+            transform-origin: bottom right;
+        }
+
+        .delete-button:hover .bin-top {
+            transition-duration: 0.5s;
+            transform: rotate(160deg);
+        }
+
+        /* زر حذف الصورة */
+        .delete-image-btn {
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: rgb(20, 20, 20);
+            border: none;
+            font-weight: 600;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+            cursor: pointer;
+            transition-duration: 0.3s;
+            overflow: hidden;
+            position: relative;
+            gap: 2px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .image-preview-container:hover .delete-image-btn {
+            opacity: 1;
+        }
+
+        .delete-image-btn:hover {
+            transition-duration: 0.3s;
+            background-color: rgb(255, 69, 69);
+            align-items: center;
+            gap: 0;
+        }
+
+        .delete-image-btn .bin-top {
+            transform-origin: bottom right;
+        }
+
+        .delete-image-btn:hover .bin-top {
+            transition-duration: 0.5s;
+            transform: rotate(160deg);
+        }
+
+        /* شريط التقدم المحسن */
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .progress-percentage {
+            font-weight: bold;
+            color: var(--secondary-color);
+            font-size: 16px;
+        }
+
+        .progress-bar {
+            height: 14px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--secondary-color), #27ae60, #2ecc71);
+            border-radius: 10px;
+            transition: width 0.8s ease;
+            position: relative;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.4);
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .image-upload-container {
+            margin: 20px 0;
+            text-align: center;
+            padding: 20px;
+            background: rgba(52, 152, 219, 0.05);
+            border-radius: 10px;
+            border: 2px dashed var(--border-color);
+        }
+
+        .image-preview-container {
+            position: relative;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+            padding: 12px 25px;
+        }
+
+        .upload-btn:hover {
+            background: linear-gradient(135deg, #8e44ad, #7d3c98);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* قسم المحاضرات المتراكمة */
+        .lectures-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(155, 89, 182, 0.05);
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .lecture-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background-color: var(--light-color);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border-left: 4px solid #9b59b6;
+        }
+
+        .lecture-item:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .lecture-text {
+            flex-grow: 1;
+            font-size: 15px;
+            margin: 0 15px;
+        }
+
+        .lecture-completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .add-lecture-form {
+            display: flex;
+            margin-bottom: 18px;
+            gap: 0;
+        }
+
+        .add-lecture-input {
+            flex-grow: 1;
+            margin-bottom: 0;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
+
+        .add-lecture-btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            background: linear-gradient(135deg, #9b59b6, #8e44ad);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 50px;
+            height: 46px;
+            border-radius: 10px;
+            margin-right: 15px;
+        }
+
+        .add-lecture-btn:hover {
+            background: linear-gradient(135deg, #8e44ad, #7d3c98);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, var(--secondary-color), #27ae60);
+            opacity: 1;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, var(--accent-color), #c0392b);
+            opacity: 1;
+        }
+
+        .auto-save-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: var(--secondary-color);
+            color: white;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .auto-save-indicator.show {
+            opacity: 1;
+        }
+
+        .current-time-display {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-color);
+            background: rgba(52, 152, 219, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        @media (max-width: 768px) {
+            .game-board {
+                grid-template-columns: repeat(10, 1fr);
+            }
+
+            .header-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .theme-toggle,
+            .export-btn,
+            .import-btn {
+                width: 80%;
+                justify-content: center;
+            }
+
+            .countdown-numbers {
+                flex-wrap: wrap;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 90vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-board {
+                grid-template-columns: repeat(7, 1fr);
+            }
+
+            .countdown-item {
+                min-width: 70px;
+                padding: 12px;
+            }
+
+            .countdown-item div:first-child {
+                font-size: 20px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px 0;
+            }
+            
+            .modal-body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>طريقي لكلية حاسبات</h1>
+            <p>رحلة المذاكرة من 20 نوفمبر 2025 لـ 26 يونيو 2026</p>
+
+            <div class="header-controls">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i> وضع الليل
+                </button>
+                <button class="export-btn" id="exportData">
+                    <i class="fas fa-download"></i> حفظ البيانات
+                </button>
+                <button class="import-btn" id="importData">
+                    <i class="fas fa-upload"></i> استيراد البيانات
+                </button>
+                <input type="file" id="importFile" class="file-input" accept=".json">
+            </div>
+        </header>
+
+        <div class="current-time-display" id="currentTimeDisplay">
+            الوقت الحالي في القاهرة: جاري التحميل...
+        </div>
+
+        <div class="countdown">
+            <h2>الوقت اللي باقي علي الامتحانات</h2>
+            <div class="countdown-numbers">
+                <div class="countdown-item">
+                    <div id="days">0</div>
+                    <div>أيام</div>
+                </div>
+                <div class="countdown-item">
+                    <div id="hours">0</div>
+                    <div>ساعات</div>
+                </div>
+                <div class="countdown-item">
+                    <div id="minutes">0</div>
+                    <div>دقائق</div>
+                </div>
+                <div class="countdown-item">
+                    <div id="seconds">0</div>
+                    <div>ثواني</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="motivational-quote">
+            <i class="fas fa-quote-left"></i> Success is the sum of successes that are repeated day after day.<i
+                class="fas fa-quote-right"></i>
+            <div style="margin-top: 10px; font-size: 14px;">- روبرت كولير</div>
+        </div>
+
+        <div class="game-board" id="gameBoard">
+            <!-- سيتم إنشاء مربعات الأيام بالجافاسكريبت -->
+        </div>
+
+        <div class="final-goal">
+            <h2>هدفي: كلية حاسبات و معلومات</h2>
+            <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="كلية الحاسبات" class="college-image">
+        </div>
+    </div>
+
+    <div class="modal" id="dayModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalDayTitle">يوم 1</h3>
+                <span class="close-modal" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </span>
+            </div>
+            <div class="modal-body">
+                <div class="image-upload-container">
+                    <button class="upload-btn" id="uploadImageBtn">
+                        <i class="fas fa-camera"></i> رفع صورة لليوم
+                    </button>
+                    <input type="file" id="imageInput" class="file-input" accept="image/*">
+                    <div class="image-preview-container">
+                        <img id="imagePreview" class="image-preview" alt="معاينة الصورة">
+                        <button class="delete-image-btn" id="deleteImageBtn" title="حذف الصورة">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 69 14"
+                                class="svgIcon bin-top">
+                                <g clip-path="url(#clip0_35_24)">
+                                    <path fill="white"
+                                        d="M20.8232 2.62734L19.9948 4.21304C19.8224 4.54309 19.4808 4.75 19.1085 4.75H4.92857C2.20246 4.75 0 6.87266 0 9.5C0 12.1273 2.20246 14.25 4.92857 14.25H64.0714C66.7975 14.25 69 12.1273 69 9.5C69 6.87266 66.7975 4.75 64.0714 4.75H49.8915C49.5192 4.75 49.1776 4.54309 49.0052 4.21305L48.1768 2.62734C47.3451 1.00938 45.6355 0 43.7719 0H25.2281C23.3645 0 21.6549 1.00938 20.8232 2.62734ZM64.0023 20.0648C64.0397 19.4882 63.5822 19 63.0044 19H5.99556C5.4178 19 4.96025 19.4882 4.99766 20.0648L8.19375 69.3203C8.44018 73.0758 11.6746 76 15.5712 76H53.4288C57.3254 76 60.5598 73.0758 60.8062 69.3203L64.0023 20.0648Z">
+                                    </path>
+                                </g>
+                                <defs>
+                                    <clipPath id="clip0_35_24">
+                                        <rect fill="white" height="14" width="69"></rect>
+                                    </clipPath>
+                                </defs>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lectures-container">
+                    <div class="section-title">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>المحاضرات المتراكمة</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-label">تقدمك في المحاضرات</span>
+                            <span class="progress-percentage" id="lectureProgressPercentage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="lectureProgressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="add-lecture-form">
+                        <input type="text" id="newLectureInput" class="add-lecture-input"
+                            placeholder="أضف محاضرة متراكمة...">
+                        <button id="addLectureBtn" class="add-lecture-btn" title="إضافة محاضرة">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="lecturesList">
+                        <!-- المحاضرات ستضاف هنا ديناميكيًا -->
+                    </div>
+                </div>
+
+                <div class="task-container">
+                    <div class="section-title">
+                        <i class="fas fa-tasks"></i>
+                        <span>قائمة المهام اليومية</span>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-header">
+                            <span class="progress-label">تقدم المهام</span>
+                            <span class="progress-percentage" id="taskProgressPercentage">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="taskProgressFill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="add-task-form">
+                        <input type="text" id="newTaskInput" class="add-task-input" placeholder="أضف مهمة جديدة...">
+                        <button id="addTaskBtn" class="add-task-btn" title="إضافة مهمة">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="tasksList">
+                        <!-- المهام ستضاف هنا ديناميكيًا -->
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <div class="section-title">
+                        <i class="fas fa-check-circle"></i>
+                        <label for="dailyAccomplishments">ما أنجزته اليوم يا أندرو</label>
+                    </div>
+                    <textarea id="dailyAccomplishments" rows="4" placeholder="اكتب إنجازاتك اليومية هنا..."></textarea>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <div class="section-title">
+                        <i class="fas fa-lightbulb"></i>
+                        <label for="dailyAdvice">نصيحة اليوم لنفسي</label>
+                    </div>
+                    <textarea id="dailyAdvice" rows="3" placeholder="اكتب نصيحة تحفيزية لنفسك هنا..."></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notification" class="notification"></div>
+    <div id="autoSaveIndicator" class="auto-save-indicator">
+        <i class="fas fa-save"></i> تم الحفظ تلقائياً
+    </div>
+
+    <script>
+        // التواريخ المحددة بدقة عالية لمصر القاهرة
+        const startDate = new Date('November 20, 2025 01:17:00 GMT+02:00'); // 1:17 صباحاً 20 نوفمبر 2025
+        const examDate = new Date('June 26, 2026 00:00:00 GMT+02:00'); // 12:00 صباحاً 26 يونيو 2026
+
+        // عناصر DOM
+        const daysElement = document.getElementById('days');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        const gameBoard = document.getElementById('gameBoard');
+        const dayModal = document.getElementById('dayModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalDayTitle = document.getElementById('modalDayTitle');
+        const dailyAccomplishments = document.getElementById('dailyAccomplishments');
+        const dailyAdvice = document.getElementById('dailyAdvice');
+        const themeToggle = document.getElementById('themeToggle');
+        const newTaskInput = document.getElementById('newTaskInput');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const tasksList = document.getElementById('tasksList');
+        const taskProgressFill = document.getElementById('taskProgressFill');
+        const taskProgressPercentage = document.getElementById('taskProgressPercentage');
+        const exportDataBtn = document.getElementById('exportData');
+        const importDataBtn = document.getElementById('importData');
+        const importFileInput = document.getElementById('importFile');
+        const uploadImageBtn = document.getElementById('uploadImageBtn');
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const deleteImageBtn = document.getElementById('deleteImageBtn');
+        const notification = document.getElementById('notification');
+        const autoSaveIndicator = document.getElementById('autoSaveIndicator');
+        const newLectureInput = document.getElementById('newLectureInput');
+        const addLectureBtn = document.getElementById('addLectureBtn');
+        const lecturesList = document.getElementById('lecturesList');
+        const lectureProgressFill = document.getElementById('lectureProgressFill');
+        const lectureProgressPercentage = document.getElementById('lectureProgressPercentage');
+        const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+
+        let currentDay = null;
+        let currentTasks = [];
+        let currentLectures = [];
+        let currentImage = null;
+        let autoSaveTimeout = null;
+
+        // التحقق من توفر localStorage
+        const isLocalStorageAvailable = () => {
+            try {
+                const test = 'test';
+                localStorage.setItem(test, test);
+                localStorage.removeItem(test);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        };
+
+        // دالة آمنة لحفظ البيانات
+        const safeSetItem = (key, value) => {
+            if (isLocalStorageAvailable()) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(value));
+                    return true;
+                } catch (e) {
+                    console.warn('LocalStorage is full or unavailable');
+                    return false;
+                }
+            }
+            return false;
+        };
+
+        // دالة آمنة لقراءة البيانات
+        const safeGetItem = (key) => {
+            if (isLocalStorageAvailable()) {
+                try {
+                    return JSON.parse(localStorage.getItem(key));
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        };
+
+        // الحصول على الوقت الحالي في القاهرة
+        function getCurrentCairoTime() {
+            return new Date().toLocaleString("ar-EG", {
+                timeZone: "Africa/Cairo",
+                hour12: true,
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric'
+            });
+        }
+
+        // تحديث عرض الوقت الحالي
+        function updateCurrentTime() {
+            currentTimeDisplay.textContent = `الوقت الحالي في القاهرة: ${getCurrentCairoTime()}`;
+        }
+
+        // حساب اليوم الحالي بناءً على التاريخ
+        function getCurrentDay() {
+            const now = new Date();
+            
+            // إذا كان الوقت الحالي قبل تاريخ البداية، نبدأ من اليوم الأول
+            if (now < startDate) {
+                return 1;
+            }
+            
+            // حساب الفرق بالأيام بين تاريخ البداية واليوم الحالي
+            const diffTime = now - startDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            
+            // اليوم الحالي هو الفرق + 1 (اليوم الأول = 1)
+            return diffDays + 1;
+        }
+
+        // حساب موعد منتصف الليل القادم في القاهرة
+        function getNextMidnight() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            return tomorrow.getTime() - now.getTime();
+        }
+
+        // إظهار الإشعارات
+        function showNotification(message, type = 'success') {
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.className = 'notification';
+                }, 300);
+            }, 3000);
+        }
+
+        // إظهار مؤشر الحفظ التلقائي
+        function showAutoSaveIndicator() {
+            autoSaveIndicator.classList.add('show');
+            setTimeout(() => {
+                autoSaveIndicator.classList.remove('show');
+            }, 2000);
+        }
+
+        // حفظ البيانات تلقائيًا
+        function autoSaveData() {
+            if (autoSaveTimeout) {
+                clearTimeout(autoSaveTimeout);
+            }
+
+            autoSaveTimeout = setTimeout(() => {
+                if (currentDay) {
+                    saveDayData();
+                    showAutoSaveIndicator();
+                }
+            }, 1000);
+        }
+
+        // تحميل الوضع الليلي من التخزين المحلي
+        function loadTheme() {
+            const isDarkMode = safeGetItem('darkMode');
+            if (isDarkMode) {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> وضع النهار';
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> وضع الليل';
+            }
+        }
+
+        // تبديل الوضع الليلي
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            safeSetItem('darkMode', isDarkMode);
+
+            if (isDarkMode) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i> وضع النهار';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i> وضع الليل';
+            }
+        });
+
+        // حساب الأيام المتبقية
+        function updateCountdown() {
+            const now = new Date();
+            const timeLeft = examDate - now;
+
+            if (timeLeft < 0) {
+                daysElement.textContent = '0';
+                hoursElement.textContent = '0';
+                minutesElement.textContent = '0';
+                secondsElement.textContent = '0';
+                return;
+            }
+
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+            daysElement.textContent = days;
+            hoursElement.textContent = hours;
+            minutesElement.textContent = minutes;
+            secondsElement.textContent = seconds;
+        }
+
+        // إنشاء لوحة الأيام
+        function createGameBoard() {
+            const totalDays = Math.ceil((examDate - startDate) / (1000 * 60 * 60 * 24));
+            const todayIndex = getCurrentDay();
+
+            for (let i = 1; i <= totalDays; i++) {
+                const dayBox = document.createElement('div');
+                dayBox.className = 'day-box future';
+                dayBox.textContent = i;
+                dayBox.dataset.day = i;
+
+                // تحديد حالة اليوم
+                if (i === todayIndex) {
+                    dayBox.classList.remove('future');
+                    dayBox.classList.add('current');
+                } else if (i < todayIndex) {
+                    dayBox.classList.remove('future');
+                    dayBox.classList.add('past');
+                }
+
+                // إضافة حدث النقر فقط للأيام الماضية والحالية
+                if (i <= todayIndex) {
+                    dayBox.addEventListener('click', () => openDayModal(i));
+                } else {
+                    dayBox.style.cursor = 'not-allowed';
+                }
+
+                gameBoard.appendChild(dayBox);
+            }
+
+            // تحميل بيانات الأيام المحفوظة
+            loadDaysData();
+        }
+
+        // تحميل بيانات الأيام المحفوظة
+        function loadDaysData() {
+            const totalDays = Math.ceil((examDate - startDate) / (1000 * 60 * 60 * 24));
+            const todayIndex = getCurrentDay();
+
+            for (let i = 1; i <= todayIndex; i++) {
+                try {
+                    const savedData = safeGetItem(`day_${i}`);
+                    if (savedData) {
+                        const dayBox = document.querySelector(`.day-box[data-day="${i}"]`);
+
+                        if (savedData.completed) {
+                            dayBox.classList.add('completed');
+                            dayBox.classList.remove('current', 'past');
+                        }
+
+                        if (savedData.image) {
+                            dayBox.classList.add('has-image');
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error loading day ${i}:`, error);
+                }
+            }
+        }
+
+        // ضغط الصورة
+        function compressImage(file, maxWidth, maxHeight, quality) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const img = new Image();
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // حساب الأبعاد الجديدة مع الحفاظ على النسبة
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height *= maxWidth / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width *= maxHeight / height;
+                                height = maxHeight;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // تحويل إلى صورة مضغوطة
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                        resolve(compressedDataUrl);
+                    };
+                    img.onerror = reject;
+                    img.src = event.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // تحديث شريط تقدم المهام
+        function updateTaskProgressBar() {
+            if (currentTasks.length === 0) {
+                taskProgressFill.style.width = '0%';
+                taskProgressPercentage.textContent = '0%';
+                return;
+            }
+
+            const completedTasks = currentTasks.filter(task => task.completed).length;
+            const progress = (completedTasks / currentTasks.length) * 100;
+            taskProgressFill.style.width = `${progress}%`;
+            taskProgressPercentage.textContent = `${Math.round(progress)}%`;
+        }
+
+        // تحديث شريط تقدم المحاضرات
+        function updateLectureProgressBar() {
+            if (currentLectures.length === 0) {
+                lectureProgressFill.style.width = '0%';
+                lectureProgressPercentage.textContent = '0%';
+                return;
+            }
+
+            const completedLectures = currentLectures.filter(lecture => lecture.completed).length;
+            const progress = (completedLectures / currentLectures.length) * 100;
+            lectureProgressFill.style.width = `${progress}%`;
+            lectureProgressPercentage.textContent = `${Math.round(progress)}%`;
+        }
+
+        // إضافة مهمة جديدة
+        function addNewTask() {
+            const taskText = newTaskInput.value.trim();
+            if (taskText === '') return;
+
+            const task = {
+                id: Date.now(),
+                text: taskText,
+                completed: false
+            };
+
+            currentTasks.push(task);
+            renderTasks();
+            newTaskInput.value = '';
+            updateTaskProgressBar();
+            autoSaveData();
+        }
+
+        // إضافة محاضرة جديدة
+        function addNewLecture() {
+            const lectureText = newLectureInput.value.trim();
+            if (lectureText === '') return;
+
+            const lecture = {
+                id: Date.now(),
+                text: lectureText,
+                completed: false
+            };
+
+            currentLectures.push(lecture);
+            renderLectures();
+            newLectureInput.value = '';
+            updateLectureProgressBar();
+            autoSaveData();
+        }
+
+        // عرض المهام
+        function renderTasks() {
+            tasksList.innerHTML = '';
+
+            currentTasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                taskItem.className = `task-item ${task.completed ? 'task-completed' : ''}`;
+
+                taskItem.innerHTML = `
+                    <div class="checkbox-wrapper-31">
+                        <input type="checkbox" id="task-${task.id}" ${task.completed ? 'checked' : ''}>
+                        <svg viewBox="0 0 35.6 35.6">
+                            <circle class="background" cx="17.8" cy="17.8" r="17.8"></circle>
+                            <circle class="stroke" cx="17.8" cy="17.8" r="14.37"></circle>
+                            <polyline class="check" points="11.78 18.12 15.55 22.23 25.17 12.87"></polyline>
+                        </svg>
+                    </div>
+                    <span class="task-text">${task.text}</span>
+                    <button class="delete-button" data-id="${task.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 69 14" class="svgIcon bin-top">
+                            <g clip-path="url(#clip0_35_24)">
+                                <path fill="white" d="M20.8232 2.62734L19.9948 4.21304C19.8224 4.54309 19.4808 4.75 19.1085 4.75H4.92857C2.20246 4.75 0 6.87266 0 9.5C0 12.1273 2.20246 14.25 4.92857 14.25H64.0714C66.7975 14.25 69 12.1273 69 9.5C69 6.87266 66.7975 4.75 64.0714 4.75H49.8915C49.5192 4.75 49.1776 4.54309 49.0052 4.21305L48.1768 2.62734C47.3451 1.00938 45.6355 0 43.7719 0H25.2281C23.3645 0 21.6549 1.00938 20.8232 2.62734ZM64.0023 20.0648C64.0397 19.4882 63.5822 19 63.0044 19H5.99556C5.4178 19 4.96025 19.4882 4.99766 20.0648L8.19375 69.3203C8.44018 73.0758 11.6746 76 15.5712 76H53.4288C57.3254 76 60.5598 73.0758 60.8062 69.3203L64.0023 20.0648Z"></path>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_35_24">
+                                    <rect fill="white" height="14" width="69"></rect>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </button>
+                `;
+
+                tasksList.appendChild(taskItem);
+            });
+
+            // إضافة حدث النقر على خانة الاختيار
+            document.querySelectorAll('.checkbox-wrapper-31 input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const taskId = parseInt(this.id.split('-')[1]);
+                    const task = currentTasks.find(t => t.id === taskId);
+                    if (task) {
+                        task.completed = this.checked;
+                        renderTasks();
+                        updateTaskProgressBar();
+                        autoSaveData();
+                    }
+                });
+            });
+
+            // إضافة حدث لحذف المهمة
+            document.querySelectorAll('.delete-button').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const taskId = parseInt(this.dataset.id);
+                    currentTasks = currentTasks.filter(t => t.id !== taskId);
+                    renderTasks();
+                    updateTaskProgressBar();
+                    autoSaveData();
+                });
+            });
+        }
+
+        // عرض المحاضرات
+        function renderLectures() {
+            lecturesList.innerHTML = '';
+
+            currentLectures.forEach(lecture => {
+                const lectureItem = document.createElement('div');
+                lectureItem.className = `lecture-item ${lecture.completed ? 'lecture-completed' : ''}`;
+
+                lectureItem.innerHTML = `
+                    <div class="checkbox-wrapper-31">
+                        <input type="checkbox" id="lecture-${lecture.id}" ${lecture.completed ? 'checked' : ''}>
+                        <svg viewBox="0 0 35.6 35.6">
+                            <circle class="background" cx="17.8" cy="17.8" r="17.8"></circle>
+                            <circle class="stroke" cx="17.8" cy="17.8" r="14.37"></circle>
+                            <polyline class="check" points="11.78 18.12 15.55 22.23 25.17 12.87"></polyline>
+                        </svg>
+                    </div>
+                    <span class="lecture-text">${lecture.text}</span>
+                    <button class="delete-button" data-id="${lecture.id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 69 14" class="svgIcon bin-top">
+                            <g clip-path="url(#clip0_35_24)">
+                                <path fill="white" d="M20.8232 2.62734L19.9948 4.21304C19.8224 4.54309 19.4808 4.75 19.1085 4.75H4.92857C2.20246 4.75 0 6.87266 0 9.5C0 12.1273 2.20246 14.25 4.92857 14.25H64.0714C66.7975 14.25 69 12.1273 69 9.5C69 6.87266 66.7975 4.75 64.0714 4.75H49.8915C49.5192 4.75 49.1776 4.54309 49.0052 4.21305L48.1768 2.62734C47.3451 1.00938 45.6355 0 43.7719 0H25.2281C23.3645 0 21.6549 1.00938 20.8232 2.62734ZM64.0023 20.0648C64.0397 19.4882 63.5822 19 63.0044 19H5.99556C5.4178 19 4.96025 19.4882 4.99766 20.0648L8.19375 69.3203C8.44018 73.0758 11.6746 76 15.5712 76H53.4288C57.3254 76 60.5598 73.0758 60.8062 69.3203L64.0023 20.0648Z"></path>
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_35_24">
+                                    <rect fill="white" height="14" width="69"></rect>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </button>
+                `;
+
+                lecturesList.appendChild(lectureItem);
+            });
+
+            // إضافة حدث النقر على خانة الاختيار
+            document.querySelectorAll('.checkbox-wrapper-31 input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const lectureId = parseInt(this.id.split('-')[1]);
+                    const lecture = currentLectures.find(l => l.id === lectureId);
+                    if (lecture) {
+                        lecture.completed = this.checked;
+                        renderLectures();
+                        updateLectureProgressBar();
+                        autoSaveData();
+                    }
+                });
+            });
+
+            // إضافة حدث لحذف المحاضرة
+            document.querySelectorAll('.delete-button').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const lectureId = parseInt(this.dataset.id);
+                    currentLectures = currentLectures.filter(l => l.id !== lectureId);
+                    renderLectures();
+                    updateLectureProgressBar();
+                    autoSaveData();
+                });
+            });
+        }
+
+        // فتح نافذة اليوم
+        function openDayModal(dayNumber) {
+            currentDay = dayNumber;
+            modalDayTitle.textContent = `يوم ${dayNumber}`;
+
+            // تحميل البيانات المحفوظة لهذا اليوم
+            try {
+                const savedData = safeGetItem(`day_${dayNumber}`);
+                if (savedData) {
+                    currentTasks = savedData.tasks || [];
+                    currentLectures = savedData.lectures || [];
+                    dailyAccomplishments.value = savedData.accomplishments || '';
+                    dailyAdvice.value = savedData.advice || '';
+                    currentImage = savedData.image || null;
+
+                    if (currentImage) {
+                        imagePreview.src = currentImage;
+                        imagePreview.style.display = 'block';
+                    } else {
+                        imagePreview.style.display = 'none';
+                    }
+                } else {
+                    currentTasks = [];
+                    currentLectures = [];
+                    dailyAccomplishments.value = '';
+                    dailyAdvice.value = '';
+                    currentImage = null;
+                    imagePreview.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading day data:', error);
+                showNotification('حدث خطأ في تحميل بيانات اليوم', 'error');
+                currentTasks = [];
+                currentLectures = [];
+                dailyAccomplishments.value = '';
+                dailyAdvice.value = '';
+                currentImage = null;
+                imagePreview.style.display = 'none';
+            }
+
+            renderTasks();
+            renderLectures();
+            updateTaskProgressBar();
+            updateLectureProgressBar();
+            dayModal.style.display = 'flex';
+        }
+
+        // إغلاق النافذة
+        closeModal.addEventListener('click', () => {
+            dayModal.style.display = 'none';
+        });
+
+        // إغلاق النافذة عند النقر خارجها
+        window.addEventListener('click', (e) => {
+            if (e.target === dayModal) {
+                dayModal.style.display = 'none';
+            }
+        });
+
+        // حفظ بيانات اليوم
+        function saveDayData() {
+            if (currentDay) {
+                const dayData = {
+                    tasks: currentTasks,
+                    lectures: currentLectures,
+                    accomplishments: dailyAccomplishments.value,
+                    advice: dailyAdvice.value,
+                    image: currentImage,
+                    completed: currentTasks.some(task => task.completed) ||
+                        currentLectures.some(lecture => lecture.completed) ||
+                        dailyAccomplishments.value ||
+                        dailyAdvice.value ||
+                        currentImage
+                };
+
+                try {
+                    safeSetItem(`day_${currentDay}`, dayData);
+
+                    // تحديث المظهر في اللوحة
+                    const dayBox = document.querySelector(`.day-box[data-day="${currentDay}"]`);
+                    if (dayBox && dayData.completed) {
+                        dayBox.classList.add('completed');
+                        dayBox.classList.remove('current', 'past');
+                    }
+
+                    if (dayBox && dayData.image) {
+                        dayBox.classList.add('has-image');
+                    } else if (dayBox) {
+                        dayBox.classList.remove('has-image');
+                    }
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                    if (error.name === 'QuotaExceededError') {
+                        showNotification('المساحة التخزينية غير كافية. يرجى حذف بعض الصور أو استخدام صور أصغر.', 'error');
+                    } else {
+                        showNotification('حدث خطأ في حفظ البيانات', 'error');
+                    }
+                }
+            }
+        }
+
+        // تصدير البيانات
+        exportDataBtn.addEventListener('click', () => {
+            const totalDays = Math.ceil((examDate - startDate) / (1000 * 60 * 60 * 24));
+            const todayIndex = getCurrentDay();
+
+            const allData = {};
+            for (let i = 1; i <= todayIndex; i++) {
+                try {
+                    const savedData = safeGetItem(`day_${i}`);
+                    if (savedData) {
+                        allData[i] = savedData;
+                    }
+                } catch (error) {
+                    console.error(`Error exporting day ${i}:`, error);
+                }
+            }
+
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+
+            const url = URL.createObjectURL(dataBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `study_progress_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showNotification('تم تصدير البيانات بنجاح!');
+        });
+
+        // استيراد البيانات
+        importDataBtn.addEventListener('click', () => {
+            importFileInput.click();
+        });
+
+        importFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+
+                    for (const day in importedData) {
+                        safeSetItem(`day_${day}`, importedData[day]);
+                    }
+
+                    showNotification('تم استيراد البيانات بنجاح!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } catch (error) {
+                    console.error('Error importing data:', error);
+                    showNotification('خطأ في استيراد البيانات: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // رفع صورة
+        uploadImageBtn.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        imageInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // التحقق من نوع الملف
+            if (!file.type.match('image.*')) {
+                showNotification('الرجاء اختيار ملف صورة فقط', 'error');
+                return;
+            }
+
+            // التحقق من حجم الملف (أقل من 2MB)
+            if (file.size > 2000000) {
+                showNotification('حجم الصورة كبير جداً. يرجى اختيار صورة أقل من 2MB', 'error');
+                return;
+            }
+
+            try {
+                // ضغط الصورة
+                const compressedImage = await compressImage(file, 800, 600, 0.7);
+                currentImage = compressedImage;
+                imagePreview.src = currentImage;
+                imagePreview.style.display = 'block';
+                showNotification('تم رفع الصورة بنجاح!');
+                autoSaveData();
+            } catch (error) {
+                console.error('Error compressing image:', error);
+                showNotification('حدث خطأ في معالجة الصورة', 'error');
+            }
+        });
+
+        // حذف الصورة
+        deleteImageBtn.addEventListener('click', () => {
+            if (currentImage) {
+                currentImage = null;
+                imagePreview.style.display = 'none';
+                imageInput.value = '';
+                showNotification('تم حذف الصورة بنجاح!');
+                autoSaveData();
+            }
+        });
+
+        // إضافة مهمة عند النقر على زر الإضافة
+        addTaskBtn.addEventListener('click', addNewTask);
+
+        // إضافة مهمة عند الضغط على Enter
+        newTaskInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                addNewTask();
+            }
+        });
+
+        // إضافة محاضرة عند النقر على زر الإضافة
+        addLectureBtn.addEventListener('click', addNewLecture);
+
+        // إضافة محاضرة عند الضغط على Enter
+        newLectureInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                addNewLecture();
+            }
+        });
+
+        // إضافة أحداث الحفظ التلقائي
+        dailyAccomplishments.addEventListener('input', autoSaveData);
+        dailyAdvice.addEventListener('input', autoSaveData);
+
+        // بدء التطبيق
+        loadTheme();
+        updateCurrentTime();
+        updateCountdown();
+        createGameBoard();
+
+        // تحديث الوقت الحالي كل ثانية
+        setInterval(updateCurrentTime, 1000);
+        
+        // تحديث العد التنازلي كل ثانية
+        setInterval(updateCountdown, 1000);
+
+        // التحقق من تغيير اليوم كل دقيقة
+        setInterval(() => {
+            const currentDayBefore = getCurrentDay();
+            // إعادة تحميل الصفحة إذا تغير اليوم
+            if (currentDayBefore !== getCurrentDay()) {
+                location.reload();
+            }
+        }, 60000); // التحقق كل دقيقة
+
+        // جدولة إعادة تحميل الصفحة عند منتصف الليل
+        setTimeout(() => {
+            location.reload();
+        }, getNextMidnight());
+    </script>
+</body>
+</html>
